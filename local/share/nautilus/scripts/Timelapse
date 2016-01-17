@@ -1,0 +1,30 @@
+#!/bin/bash
+#Title=Timelapse
+function get_name()
+{
+	arg="$1"
+	result=${arg##*/}
+	result=${result%.*}
+	echo $result
+}
+LISTOFFILES="files.txt"
+echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | while read line; do
+        if [ ${#line} -gt 0 ]; then
+#           if [[ "$line" == *.JPG || "$line" == *.jpg ]]; then
+                echo "$line" >> $LISTOFFILES
+#           fi
+        fi
+done
+
+fps=`zenity --scale --text="Set FPS" --value=5 --min-value=2 --max-value=25 --step=1`
+
+FIRST=`head -n 1 $LISTOFFILES`
+FIRST=$(get_name $FIRST)
+logger "FIRST $FIRST"
+LAST=`tail -n 1 $LISTOFFILES`
+LAST=$(get_name $LAST)
+RESULT="$FIRST-$LAST.avi"
+mencoder -nosound -noskip -oac copy -ovc xvid -xvidencopts pass=1 -o $RESULT -vf scale=1920:1080 -mf fps=$fps 'mf://@files.txt' | zenity --progress --text="Processing files ..." --auto-close --percentage=0 --pulsate
+
+rm files.txt
+rm *.log
