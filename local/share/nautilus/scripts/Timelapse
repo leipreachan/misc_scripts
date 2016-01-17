@@ -10,9 +10,7 @@ function get_name()
 LISTOFFILES="files.txt"
 echo "$NAUTILUS_SCRIPT_SELECTED_FILE_PATHS" | while read line; do
         if [ ${#line} -gt 0 ]; then
-#           if [[ "$line" == *.JPG || "$line" == *.jpg ]]; then
-                echo "$line" >> $LISTOFFILES
-#           fi
+		echo "$line" >> $LISTOFFILES
         fi
 done
 
@@ -20,11 +18,9 @@ fps=`zenity --scale --text="Set FPS" --value=5 --min-value=2 --max-value=25 --st
 
 FIRST=`head -n 1 $LISTOFFILES`
 FIRST=$(get_name $FIRST)
-logger "FIRST $FIRST"
 LAST=`tail -n 1 $LISTOFFILES`
 LAST=$(get_name $LAST)
 RESULT="$FIRST-$LAST.avi"
-mencoder -nosound -noskip -oac copy -ovc xvid -xvidencopts pass=1 -o $RESULT -vf scale=1920:1080 -mf fps=$fps 'mf://@files.txt' | zenity --progress --text="Processing files ..." --auto-close --percentage=0 --pulsate
+mencoder -nosound -noskip -oac copy -ovc xvid -xvidencopts pass=1 -o $RESULT -vf scale=1920:1080 -mf fps=$fps "mf://@${LISTOFFILES}"  2>&1 | awk -vRS="\r" '$1 ~ /Pos/ {gsub(/Pos:/," ");gsub(/%\)/," ");gsub(/ \(/," ");print $3"\n#Complete :\\t\\t"$3"%\\nProcessing Rate :\\t"$4"\\nTime Remaining :\\t"$6"\\nEstimated Size :\\t"$7; fflush();}' | zenity --progress --auto-kill 
 
-rm files.txt
-rm *.log
+rm $LISTOFFILES *.log
