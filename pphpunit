@@ -1,0 +1,23 @@
+#!/bin/bash
+
+OPTIND=1 # Reset in case getopts has been used previously in the shell.
+phpunit_args="" # default phpunit args
+selenium_args="--sp=4501" # default arguments passed to phpunit tests 
+
+# magic
+while getopts ":p:" opt; do
+    case "$opt" in
+        p)  
+            phpunit_args="$OPTARG"
+            ;;  
+    esac
+done
+# more magic
+shift $((OPTIND-1))
+[ "$1" = "--" ] && shift
+
+
+t=( $@ )
+# change this line if you want less threads
+prc=${#t[@]}
+printf "%s\n" "${t[@]}" | xargs -n 1 -P $prc -ICMD sh -c "phpunit --color $phpunit_args CMD $selenium_args | gawk '{ print "'"'CMD' > "'",  \$0 }'"
