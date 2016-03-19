@@ -1,4 +1,5 @@
 #!/bin/sh
+#Title=Video Stabilization
 # --------------------------------------------
 #  Video Shooting Stabilization
 #  Command-line & Nautilus script
@@ -17,7 +18,7 @@
 
 # You can define default encoding codec and rates in kbits/s
 VIDEO_CODEC="libx264"
-VIDEO_RATE=5000
+VIDEO_RATE="5000"
 AUDIO_CODEC="libmp3lame"
 AUDIO_RATE=128
 
@@ -79,7 +80,7 @@ do
 
   # display current percentage
   echo $PERCENTAGE
-done | yad --width=400 --height=30 --progress --auto-close --title "$TITLE" --text "$TEXT"
+done | zenity --progress --auto-close --title "$TITLE" --text "$TEXT"
 
 # if encode has been canceled, kill the current process
 CANCELED="FALSE"
@@ -96,8 +97,7 @@ fi
 # -----------------------------------
 TITLE="Stabilization of ${ORIGINAL}"
 TEXT="\nFinal video file will use $VIDEO_CODEC video and $AUDIO_CODEC audio.\nPlease select the encoding parameters :\n"
-CHOICE=`yad  --title "$TITLE" --text "$TEXT" --image "dialog-question" --form --field=Stabilize:CHK ${STABILIZE} --field="Video bitrate (kbits):NUM" ${VIDEO_RATE} --field="Audio bitrate (kbits):NUM" ${AUDIO_RATE}`
-
+CHOICE=`zenity  --title "$TITLE" --text "$TEXT" --forms --add-entry="Stabilize:CHK" ${STABILIZE} --add-entry="Video bitrate (kbits):NUM" ${VIDEO_RATE} --add-entry="Audio bitrate (kbits):NUM" ${AUDIO_RATE}`
 # extract the parameters
 STABILIZE=`echo ${CHOICE}  | cut -d"|" -f1`
 VIDEO_RATE=`echo ${CHOICE} | cut -d"|" -f2 | cut -d"," -f1 | cut -d"." -f1`
