@@ -20,4 +20,4 @@ shift $((OPTIND-1))
 t=( $@ )
 # change this line if you want less threads
 prc=${#t[@]}
-printf "%s\n" "${t[@]}" | xargs -n 1 -P $prc -ICMD sh -c "phpunit --color $phpunit_args CMD $selenium_args | gawk '{ print "'"'CMD' > "'",  \$0 }'"
+printf "%s\n" "${t[@]}" | xargs -n 1 -P $prc -ICMD sh -c "phpunit --colors $phpunit_args CMD $selenium_args | gawk '{ print "'"'CMD' > "'",  \$0 }'"
