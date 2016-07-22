@@ -24,6 +24,10 @@ for($i=0; $i<@ARGV; $i++) {
 			$width = 1280;
 			$height = 720;
 			$framerate = 60;
+		} elsif ($val eq '720p100' || $val eq 'r6') {
+			$width = 1280;
+			$height = 720;
+			$framerate = 100;
 		} elsif ($val eq '960p30' || $val eq 'r4') {
 			$width = 1280;
 			$height = 960;
