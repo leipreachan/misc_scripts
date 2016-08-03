@@ -1,3 +1,6 @@
+/**
+ * use https://jscompress.com/ to get bookmarklet minified
+ */
 javascript: (function () {
     function attribute(e, t, n) {
         e.setAttribute(t, n)
