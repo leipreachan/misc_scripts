@@ -1,5 +1,5 @@
 /**
- * use https://jscompress.com/ to get bookmarklet minified
+ * curl http://marijnhaverbeke.nl/uglifyjs?code_url=https://raw.githubusercontent.com/leipreachan/misc_scripts/master/js/highlighter.js
  */
 javascript: (function () {
     function attribute(e, t, n) {
