@@ -37,9 +37,9 @@ javascript: (function () {
             'redraw',
             'C',
             'clean',
-            '%E2%86%90 / P',
+            '→ / P',
             'prev',
-            '%E2%86%92 / N',
+            '← / N',
             'next'].join('<br>'), 30);
         body.appendChild(sp);
         body.appendChild(ht)
@@ -151,6 +151,7 @@ javascript: (function () {
                 e += t;
                 clean(0);
                 highlight([els[e]]);
+                console.log(els[e]);
                 els[e].scrollIntoView(1)
             }
         }
