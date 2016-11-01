@@ -1,0 +1,44 @@
+escape ^^^^
+register x "^^"                                         #     | Goes with the F12 definition
+
+bindkey -k k2 screen                                    # F2  | Create new window·························
+bindkey "^[O1;2Q" eval 'split' 'focus down' 'next' 'focus up' 'layout save byobu' 'layout autosave' 'screen'    # shift-F2 | horizontal split
+bindkey "^[O1;2R" focus up                              # shift-F3          | focus up
+bindkey "^[O1;2S" focus down                            # shift-F4          | focus down
+bindkey "^[[1;2A" focus up                              # shift-up          | focus up
+bindkey "^[[1;2B" focus down                            # shift-down        | focus down
+bindkey "^[[1;4A" resize +1                             # shift-alt-up      | resize +1
+bindkey "^[[1;4B" resize -1                             # shift-alt-down    | resize -1
+
+register r ":source $HOME/.screenrc^M"                  #     | Goes with F5 definition··················
+bindkey -k k5 eval 'process x' 'process r' 'echo "Screen profile updated"'    # F5  | Reload profile
+bindkey -k k6 detach                                    # F6  | Detach from this session·
+#bindkey "^[[17;2~" eval 'detach'                        # shift-F6 | detach, but don't logout
+bindkey -k k7 copy                                      # F7  | Enter copy/scrollback mode················
+register t "A^[OH^k^h"                                  #     | Goes with the F8 definition···············
+bindkey -k k8 eval 'process x' 'process t'              # F8  | Re-title a window···········
+                                                        # F11 | 'Full Screen' in gnome-terminal
+bindkey -k F2 process x                                 # F12 | Byobu's escape key
+bind R process r                                        # F12 R | Reload profile
+register s "[g G$>^h"                                   # Goes with F12 ~ definition
+bindkey "^[[15;3~" eval "stuff ' source $HOME/.bashrc; source $HOME/agentsock^M'" 'echo "Sourced fresh ssh-agent"'
+
+bindkey -k k3 eval 'prev' 'fit'                         # F3
+bindkey "^[f" eval 'prev' 'fit'                         # mac alt-left
+bindkey "^[[1;3D" eval 'prev' 'fit'                     # alt-left  | Previous Window
+bindkey -k k4 eval 'next' 'fit'                         # F4
+bindkey "^[b" eval 'next' 'fit'                         # mac alt-left
+bindkey "^[[1;3C" eval 'next' 'fit'                     # alt-right  | Next Window
+bindkey "^[[17;5~" remove                               # ctrl-F6  | kill this split
+
+
+# Make it more logical how to enter scrollback····························································
+register p "^[[5~"························································································
+bindkey "^[[5;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p' 'msgwait 1' 'echo "scrollback mode (alt-pgup / alt-pgdown)"'   # alt-pageup | scrollback
+bindkey "^[[A" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process p' 'msgwait 1' 'echo "scrollback mode (ctrl-alt-up / ctrl-alt-down)"'   # mac ctlr-alt-up | scrollback
+register n "^[[6~"························································································
+bindkey "^[[6;3~" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n' 'msgwait 1' 'echo "scrollback mode (alt-pgup / alt-pgdown)"'   # alt-pagedn | scrollback·
+bindkey "^[[B" eval 'msgwait 0' 'msgminwait 0' 'copy' 'process n' 'msgwait 1' 'echo "scrollback mode (ctrl-alt-up / ctrl-alt-down)"'   # mac ctrl-alt-down | scrollback·
+bind ~ eval 'process x' 'process s' 'exec $SED -i -e "/./,/^$/!d" $HOME/printscreen' 'screen -t PRINTSCREEN view $HOME/printscreen' # F12 ~ | printscreen
+
+bindkey "^O" eval 'exec wrap'
