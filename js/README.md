@@ -12,7 +12,7 @@ function reDrawMatrixChart() {
 }
 
 function _lockTooltip() {
-    const svgBox = window.matrix.getSvg().getBoundingClientRect();
+    const svgBox = window.matrix-chart.getSvg().getBoundingClientRect();
     const overlay = __.cel('div', {
         id: 'matrix-chart-lock-overlay',
         style: {
@@ -42,7 +42,7 @@ function _showTooltip() {
 }
 
 function _invertXAxis() {
-    const options = window.matrix.getOptions();
+    const options = window.matrix-chart.getOptions();
     let xAxisName, xAxisAlign = options.xAxisAlign;
     if (xAxisAlign === 'left') {
         xAxisAlign = 'right';
@@ -51,7 +51,7 @@ function _invertXAxis() {
         xAxisAlign = 'left';
         xAxisName = MATRIX_CHART_OPTIONS.xAxisName;
     }
-    window.matrix.setOptions(__.merge(options, {xAxisAlign, xAxisName}));
+    window.matrix-chart.setOptions(__.merge(options, {xAxisAlign, xAxisName}));
     reDrawMatrixChart();
 }
 
@@ -70,10 +70,10 @@ const MATRIX_CHART_OPTIONS = {
         const first = '-' + (history.state['from'] || history.state['rt']);
         const last = 'now';
         if (index === 'first') {
-            return (window.matrix.getOptions().xAxisAlign === 'left') ? first : last;
+            return (window.matrix-chart.getOptions().xAxisAlign === 'left') ? first : last;
         }
         if (index === 'last') {
-            return (window.matrix.getOptions().xAxisAlign === 'left') ? last : first;
+            return (window.matrix-chart.getOptions().xAxisAlign === 'left') ? last : first;
         }
         const hours = index / 60 - Math.trunc(index / 60);
         if (index != 0 && index !== "undefined" && hours === 0) {
