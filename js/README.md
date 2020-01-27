@@ -1,5 +1,7 @@
 matrix-chart.js requires __.js
 
+![chart image](matrix-chart.png)
+
 ```javascript
 function reDrawMatrixChart() {
     $.getJSON('matrixChartData') // use whatever XHR library you want
