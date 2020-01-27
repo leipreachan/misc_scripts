@@ -13,32 +13,32 @@ class MatrixChart {
             transpose: false,
             strokeWidth: 1,
             squareSize: 7,
-            xAxisAlign: 'left',
-            xAxisName: false,
-            yAxisName: false,
-            xAxisLabelNameGetter: (columnIndex) => {
-                return false;
+            xAxis: {
+                align: 'left',
+                title: false,
+                labelNameGetter: (columnIndex, min, max) => {
+                    return false;
+                },
+                clickCallback: this._empty,
             },
-            mouseOverCallback: () => {
+            yAxis: {
+                title: false,
+                labelNameGetter: (columnIndex, min, max) => {
+                    return false;
+                },
+                clickCallback: this._empty,
             },
-            mouseOutCallback: () => {
-            },
-            mouseClickPixelCallback: () => {
-            },
-            mouseDblClickPixelCallback: () => {
-            },
-            mouseOverPixelCallback: () => {
-            },
-            mouseOutPixelCallback: () => {
-            },
-            mouseXAxisClickCallback: () => {
-            },
-            mouseYAxisClickCallback: () => {
-            }
+            mouseOverCallback: this._empty,
+            mouseOutCallback: this._empty,
+            mouseClickPixelCallback: this._empty,
+            mouseDblClickPixelCallback: this._empty,
+            mouseOverPixelCallback: this._empty,
+            mouseOutPixelCallback: this._empty,
         };
         this.settings = {
-            xShift: this.options.squareSize / 2,
-            yShift: this.options.squareSize / 2,
+            axisStrokeLength: 8,
+            xShift: 1.5 * this.options.squareSize,
+            yShift: 1.5 * this.options.squareSize,
         };
 
         this.parentElement = __.cel('span', {}, parentElement);
@@ -46,6 +46,9 @@ class MatrixChart {
         this.shadow = this.parentElement.attachShadow({mode: 'open'});
         this.svg = this._createSVGRootElement(svgId);
         __.ach(this.shadow, this.svg);
+    }
+
+    _empty() {
     }
 
     /**
@@ -136,9 +139,9 @@ class MatrixChart {
         let state = pixelInfo.hasOwnProperty('state') ? pixelInfo.state : pixelInfo;
         state = state === "undefined" ? this.options.defaultStatus : state;
 
-        let x = this._getXShift() + pixelX * zoom;
-        if (this.options.xAxisAlign === 'right') {
-            x = this._getSvgBox().width - pixelX * zoom - 1.5 * zoom;
+        let x = this._getXShift() + pixelX * zoom - 0.5 * zoom;
+        if (this.options.xAxis.align === 'right') {
+            x = this._getSvgBox().width - pixelX * zoom - 2.5 * zoom;
         }
         let rect = this._createSVGElement('rect', {
             width: zoom,
@@ -181,22 +184,23 @@ class MatrixChart {
         }
     }
 
-    _isShowXAxisName() {
-        return this.options.xAxisName;
+    _isShowXAxisTitle() {
+        return this.options.xAxis.title;
     }
 
-    _isShowYAxisName() {
-        return this.options.yAxisName;
+    _isShowYAxisTitle() {
+        return this.options.yAxis.title;
     }
 
     _drawLabels() {
-        this._drawXAxisName();
+        this._drawXAxisTitle();
         this._drawXAxisLabels();
-        this._drawYAxisName();
+        this._drawYAxisTitle();
+        this._drawYAxisLabels();
     }
 
-    _drawYAxisName() {
-        if (!this._isShowYAxisName()) {
+    _drawYAxisTitle() {
+        if (!this._isShowYAxisTitle()) {
             return;
         }
         const svgBox = this._getSvgBox();
@@ -205,14 +209,14 @@ class MatrixChart {
             'text-anchor': 'middle',
             transform: `translate(15,${svgBox.height / 2})rotate(270)`
         });
-        text.addEventListener('click', this.options.mouseYAxisClickCallback);
-        text.innerHTML = this.options.yAxisName;
+        text.addEventListener('click', this.options.yAxis.clickCallback);
+        text.innerHTML = this.options.yAxis.title;
         __.ach(label, text);
         __.ach(this.svg, label);
     }
 
-    _drawXAxisName() {
-        if (!this._isShowXAxisName()) {
+    _drawXAxisTitle() {
+        if (!this._isShowXAxisTitle()) {
             return;
         }
         const svgBox = this._getSvgBox();
@@ -222,52 +226,97 @@ class MatrixChart {
             x: svgBox.width / 2,
             y: svgBox.height - 5
         });
-        text.addEventListener('click', this.options.mouseXAxisClickCallback);
-        text.innerHTML = this.options.xAxisName;
+        text.addEventListener('click', this.options.xAxis.clickCallback);
+        text.innerHTML = this.options.xAxis.title;
         __.ach(label, text);
         __.ach(this.svg, label);
     }
 
-    _drawXAxisLabels() {
-        if (!this._isShowXAxisName()) {
+    _drawYAxisLabels() {
+        if (!this._isShowYAxisTitle()) {
             return;
         }
         const mContainerBox = this.mContainer.getBoundingClientRect();
-        const labelBox = this.svg.querySelector('.xaxis');
+        const labelBox = this.svg.querySelector('.yaxis');
+
+        const mXZero = mContainerBox.x - this._getSvgBox().x;
+        const mYMin = this.settings.yShift - 5;
+        let shape = `M${mXZero},${mYMin} l0,${mContainerBox.height + 10}`;
+
+        let axis = this._createSVGElement('path', {
+            'stroke-width': '1px',
+            d: shape,
+        });
+        __.ach(labelBox, axis);
+        /*
+                for (let i = 0; i < this._getMaxLengthSeries(); i++) {
+                    let label = this.options.xAxis.labelNameGetter(i);
+                    if (i === 0 && !label) {
+                        label = this.options.xAxis.labelNameGetter('first');
+                    }
+                    if (i === this._getMaxLengthSeries() - 1 && !label) {
+                        label = this.options.xAxis.labelNameGetter('last');
+                    }
+                    if (!label) continue;
+                    const x = mXZero + i * this.options.squareSize + this.options.squareSize / 2;
+                    shape = `M${x},${mYMax} l0,5`;
+                    const verticalLine = this._createSVGElement('path', {
+                        'stroke-width': '1px',
+                        d: shape
+                    });
+                    const textElement = this._createSVGElement('text', {
+                        'text-anchor': 'middle',
+                        x: x,
+                        y: mContainerBox.height + 20
+                    });
+                    textElement.innerHTML = label;
+                    __.ach(labelBox, verticalLine);
+                    __.ach(labelBox, textElement);
+                }
+         */
+    }
+
+    _drawXAxisLabels() {
+        if (!this._isShowXAxisTitle()) {
+            return;
+        }
+        const mContainerBox = this.mContainer.getBoundingClientRect();
+        const mainAaxisElement = this.svg.querySelector('.xaxis');
+        const linesBox = this._createSVGElement('g');
+        const labelsBox = this._createSVGElement('g');
+        __.ach(mainAaxisElement, linesBox);
+        __.ach(mainAaxisElement, labelsBox);
 
         const mXZero = mContainerBox.x - this._getSvgBox().x;
         const mYMax = mContainerBox.height + this.settings.yShift;
         let shape = `M${mXZero - 5},${mYMax} l${mContainerBox.width + 10},0`;
 
-        const hLine = this._createSVGElement('path', {
+        let axis = this._createSVGElement('path', {
             'stroke-width': '1px',
             d: shape,
         });
-        __.ach(labelBox, hLine);
+        __.ach(linesBox, axis);
 
-        for (let i = 0; i < this._getMaxLengthSeries(); i++) {
-            let label = this.options.xAxisLabelNameGetter(i);
-            if (i === 0 && !label) {
-                label = this.options.xAxisLabelNameGetter('first');
-            }
-            if (i === this._getMaxLengthSeries() - 1 && !label) {
-                label = this.options.xAxisLabelNameGetter('last');
-            }
+        let maxLength = this._getMaxLengthSeries();
+        for (let i = 0; i < maxLength; i++) {
+            const label = this.options.xAxis.labelNameGetter(i, 0, maxLength);
             if (!label) continue;
             const x = mXZero + i * this.options.squareSize + this.options.squareSize / 2;
-            shape = `M${x},${mYMax} l0,5`;
-            const verticalLine = this._createSVGElement('path', {
+            shape = `M${x},${mYMax} l0,${this.settings.axisStrokeLength}`;
+            const stroke = this._createSVGElement('path', {
                 'stroke-width': '1px',
                 d: shape
             });
-            const textElement = this._createSVGElement('text', {
-                'text-anchor': 'middle',
-                x: x,
-                y: mContainerBox.height + 20
-            });
+            __.ach(linesBox, stroke);
+
+            const textElement = this._createSVGElement('text', {});
             textElement.innerHTML = label;
-            __.ach(labelBox, verticalLine);
-            __.ach(labelBox, textElement);
+            __.ach(labelsBox, textElement);
+            __.attrs(textElement, {
+                'text-anchor': 'middle',
+                x,
+                y: mContainerBox.height + stroke.getBoundingClientRect().height + textElement.getBoundingClientRect().height + 3
+            })
         }
     }
 
@@ -288,7 +337,7 @@ class MatrixChart {
     }
 
     _getXShift() {
-        return this._isShowYAxisName() ? this.settings.xShift + 20 : this.settings.xShift;
+        return this._isShowYAxisTitle() ? this.settings.xShift + 25 : this.settings.xShift;
     }
 
     _prepareCanvas() {
@@ -296,12 +345,12 @@ class MatrixChart {
         __.clr(this.svg);
         let width = data.hasOwnProperty('columns') ? data.columns.length : this._getMaxLengthSeries();
         width = (width + 1) * this.options.squareSize;
-        if (this._isShowYAxisName()) {
+        if (this._isShowXAxisTitle()) {
             width += this._getXShift();
         }
         let height = (data.rows.length + 1) * this.options.squareSize;
-        if (this._isShowXAxisName()) {
-            height += 20 + this.settings.yShift;
+        if (this._isShowYAxisTitle()) {
+            height += 35 + this.settings.yShift;
         }
         __.props(this.svg, {style: {height: `${height}px`, width: `${width}px`}});
         let background = this._createSVGElement('rect', {
