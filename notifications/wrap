@@ -1,0 +1,28 @@
+#!/bin/sh
+
+# you can put emoji or UTF8 characters make your messages easier to read
+ok_mark=":white_check_mark:"
+nok_mark=":red_circle:"
+# mm is bash script which sends text via mattermost / slack / telegram / whatever you prefer
+send_via="telegram-cli"
+if [ $# -gt 0 ]; then
+    cmd='`'"$*"'`'
+    wrap_file="$HOME/.wrap_$RANDOM"
+    "$@" 2>&1 | tee $wrap_file
+
+    EXIT_CODE=${PIPESTATUS[0]}
+    if [ $EXIT_CODE -eq 0 ]; then
+        code="$ok_mark Success"
+    else
+        code="$nok_mark Failure - $EXIT_CODE"
+    fi
+    fff=$(head -c4000 $wrap_file)
+    if [ -n "$fff" ]; then
+        echo -e "$code $ $cmd \n"'```'"\n""$fff\n"'```' | $send_via
+    else 
+        echo -e "$code $ $cmd" | $send_via
+    fi
+    rm $wrap_file
+fi
+
+exit $EXIT_CODE

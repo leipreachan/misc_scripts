@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#https://api.telegram.org/bot$BOT_KEY/getUpdates
+
+BOT_KEY=""
+CHAT_ID=""
+MSG="$1"
+
+curl -si -X GET "https://api.telegram.org/bot${BOT_KEY}/sendMessage?chat_id=${CHAT_ID}&text=${MSG}" > /dev/null
