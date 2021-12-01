@@ -3,7 +3,7 @@
 // actual workout. Use it in that case!
 
 
-function sleep(ms) {
+javascript:function sleep(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
 }
 
@@ -12,6 +12,10 @@ z = document.querySelectorAll('.workoutStep');
 z.forEach((item) => {
     let v = item.querySelector('.workoutStepName').value;
     let matcher = v.match(/(\w+) ?RPM/i);
+    if (!matcher) {
+        v = querySelector(".notes .contents").innerText;
+        matcher = v.match(/(\w+) ?RPM/i);
+    }
     let low = 0, high = 0;
     if (matcher) {
         if (matcher[1] > 1) {
